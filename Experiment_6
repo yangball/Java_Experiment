@@ -1,0 +1,205 @@
+public abstract class Account 
+{
+	protected double balance;     //账户余额
+	public Account(double init_balance)
+	{
+		balance = init_balance;
+	}
+	public void setBalance(double balance)
+	{
+		this.balance = balance;
+	}
+	public double getBalance()
+	{
+		return balance;
+	}
+	public void deposit(double amount)
+	{
+		balance += amount;
+	}
+	public abstract boolean withdraw(double amount);
+}
+
+public class Bank 
+{
+	private int numberOfCustomer;
+	private Customer[] customer;
+	
+	public Bank()
+	{
+		customer = new Customer[100];
+	}
+	public void addCustomer(String f,String l)
+	{
+		Customer cus = new Customer(f, l);
+		customer[numberOfCustomer] = cus;
+		numberOfCustomer++;
+	}
+	public int getNumOfCustomers()
+	{
+		return numberOfCustomer;
+	}
+	public Customer getCustomer(int index)
+	{
+		if(index>=0&&index<numberOfCustomer)
+		{
+			return customer[index];	
+		}
+		else
+		{
+			return null;
+		}
+	}
+}
+
+public class CheckingAccount extends Account 
+{
+	private double overdraftProtection;
+	public CheckingAccount(double balance)
+	{
+		super(balance);
+	}
+	public CheckingAccount(double balance,double protect)
+	{
+		super(balance);
+		this.overdraftProtection = protect;
+	}
+	@Override
+	public boolean withdraw(double amount)
+	{
+		if(balance>=amount)
+		{
+			balance -= amount;
+			return true;
+		}
+		else
+		{
+			if(amount-balance>overdraftProtection)
+			{
+				return false;
+			}
+			else
+			{
+				balance = 0;
+				overdraftProtection -=(amount-balance);
+				return true;
+			}
+		}
+	}
+	public double getOverdraftProtection()
+	{
+		return overdraftProtection;
+	}
+	public String toString()
+	{
+		return "CheckingAccount:Current balance is "+balance+" OverdraftProtection="+overdraftProtection;
+	}
+}
+
+public class SavingAccount extends Account
+{
+	private double interestRate;
+	
+	public SavingAccount(double balance,double interest_rate)
+	{
+		super(balance);
+		this.interestRate = interest_rate;
+	}
+	public void addInterest()
+	{
+		balance += interestRate*balance;
+	}
+	@Override
+	public boolean withdraw(double amount)
+	{
+		return balance>=amount;
+	}
+	public double getInterestRate()
+	{
+		return interestRate;
+	}
+	public String toString()
+	{
+		return "SavingAccount: Current balance is "+balance+" Interest rate="+interestRate;
+	}
+}
+
+public class Customer 
+{
+	private String firstName;
+	private String lastName;
+	private int numberOfAccount;
+	private Account[] account;
+	public Customer(String f,String l)
+	{
+		firstName = f;
+		lastName = l;
+		account = new Account[100];
+	}
+	public String getFirstName() 
+	{
+		return firstName;
+	}
+	public String getLastName() 
+	{
+		return lastName;
+	}
+	public int getNumberOfAccount() 
+	{
+		return numberOfAccount;
+	}
+	public Account getAccount(int index) 
+	{
+			return account[index];
+	}
+	public void addAccount(Account acc)
+	{
+		account[numberOfAccount] = acc;
+		numberOfAccount++;
+	}
+	public String toString()
+	{
+		return lastName+" "+firstName;
+	}
+}
+
+public class Test 
+{
+	public static void main(String[] args) 
+	{
+		
+		System.out.println("Customer Reports");
+		System.out.println("================================");
+		Bank bank = new Bank();
+		bank.addCustomer("Smith","Jane");
+		bank.addCustomer("Bryant","Owen");
+		bank.addCustomer("Soley","Tim");
+		bank.addCustomer("Soley","Maria");
+		bank.getCustomer(0).addAccount(new CheckingAccount(500.0,0.03));
+		bank.getCustomer(0).addAccount(new CheckingAccount(500.0,0.0));
+		bank.getCustomer(0).addAccount(new SavingAccount(500.0, 500.0));
+		bank.getCustomer(1).addAccount(new CheckingAccount(200.0, 0.0));
+		bank.getCustomer(2).addAccount(new SavingAccount(1500.0, 0.03));
+		bank.getCustomer(2).addAccount(new CheckingAccount(200.0, 0.0));
+		bank.getCustomer(3).addAccount(new CheckingAccount(200.0,0.0));
+		bank.getCustomer(3).addAccount(new SavingAccount(150.0, 0.03));
+		for(int i=0;i<bank.getNumOfCustomers();i++)
+		{
+			System.out.println("Customer:"+bank.getCustomer(i));
+			for(int j = 0;j<bank.getCustomer(i).getNumberOfAccount();j++)
+			{
+				System.out.println("\t"+bank.getCustomer(i).getAccount(j));
+			}
+		}
+		System.out.println("Testing account of customer No.1...");
+		System.out.println("Withdraw 300.00 "+bank.getCustomer(0).getAccount(0).withdraw(300.00));
+		System.out.println("Withdraw 300.00 "+bank.getCustomer(0).getAccount(0).withdraw(300.00));
+		System.out.println("Balance of account NO. 1 is 200.0");
+		System.out.println("Withdraw 300.00 "+bank.getCustomer(0).getAccount(1).withdraw(300.0));
+		System.out.println("Withdraw 300.00 "+bank.getCustomer(0).getAccount(1).withdraw(300.0));
+		System.out.println("Balance of account NO. 2 is 200.0");
+		System.out.println("Withdraw 300.00 "+bank.getCustomer(0).getAccount(2).withdraw(300.0));
+		System.out.println("Withdraw 300.00 "+bank.getCustomer(0).getAccount(2).withdraw(300.0));
+		System.out.println("Balance of account NO. 3 is 0.0");
+	}
+}
