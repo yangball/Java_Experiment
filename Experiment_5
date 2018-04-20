@@ -1,0 +1,114 @@
+public class Account  //银行账户
+{
+	private double balance; //账户余额
+	
+	public Account(double init_balance) //初始化账户余额
+	{
+		balance = init_balance;
+	}
+	
+	public double getBalance()
+	{
+		return balance;
+	}
+	public void deposit(double amount)  //储存现金
+	{
+		balance += amount;
+	}
+	public boolean withdraw(double amount)  //提取现金
+	{
+		return balance>=amount;
+	}
+}
+
+public class Bank 
+{
+	private Customer[] customer;
+	private int numberOfCustomer;
+	public Bank()
+	{
+		customer = new Customer[100];
+	}
+	public void addCustomer(String f,String l)
+	{
+		Customer cus = new Customer(f, l);
+		customer[numberOfCustomer] = cus;
+		numberOfCustomer++;
+	}
+	public int getNumOfCustomer()
+	{
+		return numberOfCustomer;
+	}
+	public Customer getCustomer(int index)
+	{
+		if(index>=0||index<numberOfCustomer)
+		{
+			return customer[index];	
+		}
+		else
+		{
+			return null;
+		}
+	}
+}
+
+public class Customer 
+{
+	private String firstName;
+	private String lastName;
+	private Account account;
+	public Customer(String f,String l)
+	{
+		firstName = f;
+		lastName = l;
+	}
+	public Account getAccount() 
+	{
+		return account;
+	}
+	public void setAccount(Account account) 
+	{
+		this.account = account;
+	}
+	public String getFirstName() 
+	{
+		return firstName;
+	}
+	public String getLastName() 
+	{
+		return lastName;
+	}
+}
+
+public class Testing 
+{
+	public static void main(String[] args) {
+		  Bank bank=new Bank();
+		  bank.addCustomer("Simms","Jane");
+		  bank.addCustomer("Bryant","Owen");
+		  bank.addCustomer("Soley","Tim");
+		  bank.addCustomer("Soley","Maria");
+		  bank.getCustomer(0).setAccount(new Account(500));
+		  bank.getCustomer(1).setAccount(new Account(500));
+		  bank.getCustomer(2).setAccount(new Account(500));
+		  bank.getCustomer(3).setAccount(new Account(500));
+		  for(int i=0;i<bank.getNumOfCustomer();i++)
+		  {
+			  Customer c=bank.getCustomer(i);
+			  System.out.println("Customer ["+(i+1)+"] is "+
+			  c.getFirstName()+","+c.getLastName());
+		  }
+		  System.out.println("\nTesting Customer's Account ...");
+		  Customer c=bank.getCustomer(0);
+		  Account acct=c.getAccount();
+		  System.out.println("Withdraw 150.00");
+		  acct.withdraw(150);
+		  System.out.println("Deposit 22.50");
+		  acct.deposit(22.50);
+		  System.out.println("Withdraw 47.62");
+		  acct.withdraw(47.62);
+		  System.out.println("Customer ["+c.getFirstName()+","+
+		  c.getLastName()+"] has a balance of "+acct.getBalance());
+	}
+}
+
